@@ -1,0 +1,30 @@
+{
+  "name": "設計系統模板",
+  "short_name": "設計模板",
+  "description": "可重用的設計系統模板，包含 Footer、FloatingMascot 等組件",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/icon-android-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-apple-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
+
