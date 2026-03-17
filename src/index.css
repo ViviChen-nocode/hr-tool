@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+/* Smooth transitions for panel collapse */
+.panel-transition {
+  transition: width 200ms ease-in-out, min-width 200ms ease-in-out, opacity 150ms ease-in-out;
+}
+
+/* Selection color */
+::selection {
+  background-color: #bfdbfe;
+  color: #1e3a5f;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

@@ -103,9 +103,11 @@ export default function OrgNode({ data }: NodeProps) {
     return (
       <div
         ref={containerRef}
-        className="min-w-[200px] rounded-lg border-2 border-blue-400 bg-white px-4 py-3 shadow-lg"
+        className="min-w-[200px] rounded-lg border-2 border-blue-400 bg-white shadow-lg"
         onKeyDown={handleKeyDown}
       >
+        <div className="h-1 rounded-t-[6px] bg-gradient-to-r from-blue-500 to-blue-400" />
+        <div className="px-4 py-3">
         <Handle type="target" position={targetPosition} className="!bg-gray-400" />
 
         <input
@@ -142,6 +144,7 @@ export default function OrgNode({ data }: NodeProps) {
         </div>
 
         <Handle type="source" position={sourcePosition} className="!bg-gray-400" />
+        </div>
       </div>
     )
   }
@@ -149,22 +152,31 @@ export default function OrgNode({ data }: NodeProps) {
   return (
     <div
       ref={containerRef}
-      className="min-w-[180px] rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-md transition-colors"
+      className="min-w-[180px] rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg hover:border-blue-200 transition-all duration-150 cursor-pointer group"
       onDoubleClick={startEditing}
     >
       <Handle type="target" position={targetPosition} className="!bg-gray-400" />
 
-      <div className="text-sm font-bold text-gray-900">{member.name || '（未命名）'}</div>
+      {/* Top accent bar */}
+      <div className="h-1 rounded-t-lg bg-gradient-to-r from-blue-500 to-blue-400" />
 
-      {visibleFields.map((field) => {
-        const value = getFieldValue(field.key)
-        if (!value) return null
-        return (
-          <div key={field.key} className="mt-0.5 text-xs text-gray-500">
-            {value}
-          </div>
-        )
-      })}
+      <div className="px-4 py-3">
+        <div className="text-sm font-bold text-gray-900">{member.name || '（未命名）'}</div>
+
+        {visibleFields.map((field) => {
+          const value = getFieldValue(field.key)
+          if (!value) return null
+          return (
+            <div key={field.key} className="mt-0.5 text-xs text-gray-500">
+              {value}
+            </div>
+          )
+        })}
+
+        <div className="mt-1 text-[10px] text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
+          雙擊編輯
+        </div>
+      </div>
 
       <Handle type="source" position={sourcePosition} className="!bg-gray-400" />
     </div>

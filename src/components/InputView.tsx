@@ -26,7 +26,8 @@ export default function InputView() {
   return (
     <div className="flex h-full items-center justify-center bg-gray-50 p-4 overflow-auto">
       <div className="w-full max-w-3xl rounded-xl bg-white p-8 shadow-sm border border-gray-200">
-        <h1 className="mb-6 text-2xl font-bold text-gray-800">建立組織圖</h1>
+        <h1 className="mb-1 text-2xl font-bold text-gray-800">建立組織圖</h1>
+        <p className="mb-6 text-sm text-gray-400">輸入成員資料後，點擊下方按鈕產生組織圖</p>
 
         {/* Tabs */}
         <div className="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1">
