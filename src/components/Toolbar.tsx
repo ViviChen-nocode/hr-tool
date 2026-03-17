@@ -1,5 +1,6 @@
 import { useReactFlow } from '@xyflow/react'
 import { useAppStore } from '../store/useAppStore'
+import { exportToPng } from '../utils/exportPng'
 
 export default function Toolbar() {
   const {
@@ -11,7 +12,7 @@ export default function Toolbar() {
     setVerticalSpacing,
   } = useAppStore()
 
-  const { zoomIn, zoomOut, fitView } = useReactFlow()
+  const { zoomIn, zoomOut, fitView, getNodes } = useReactFlow()
 
   return (
     <div className="flex items-center gap-4 border-b border-gray-200 bg-white px-4 py-2">
@@ -103,9 +104,7 @@ export default function Toolbar() {
       <button
         type="button"
         className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-        onClick={() => {
-          // TODO: 匯出 PNG 功能
-        }}
+        onClick={() => exportToPng(getNodes)}
       >
         匯出 PNG
       </button>
