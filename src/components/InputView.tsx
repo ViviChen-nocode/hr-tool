@@ -1,6 +1,7 @@
 import { useAppStore } from '../store/useAppStore'
 import { useOrgStore } from '../store/useOrgStore'
 import TableInput from './TableInput'
+import TreeInput from './TreeInput'
 import type { InputMode } from '../types'
 
 const tabs: { key: InputMode; label: string }[] = [
@@ -50,9 +51,7 @@ export default function InputView() {
           {inputMode === 'table' ? (
             <TableInput />
           ) : (
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 text-sm text-gray-400">
-              樹狀模式（開發中）
-            </div>
+            <TreeInput />
           )}
         </div>
 
