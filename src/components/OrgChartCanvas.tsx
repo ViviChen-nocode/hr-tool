@@ -37,13 +37,11 @@ function isAncestor(
 const DROP_DISTANCE = 120 // px — how close a node must be to count as "over" another
 
 export default function OrgChartCanvas() {
-  const getCurrentChart = useOrgStore((s) => s.getCurrentChart)
+  const chart = useOrgStore((s) => s.getCurrentChart())
   const moveMember = useOrgStore((s) => s.moveMember)
   const direction = useAppStore((s) => s.layoutDirection)
   const horizontalSpacing = useAppStore((s) => s.horizontalSpacing)
   const verticalSpacing = useAppStore((s) => s.verticalSpacing)
-
-  const chart = getCurrentChart()
 
   const { nodes, edges } = useMemo(
     () =>

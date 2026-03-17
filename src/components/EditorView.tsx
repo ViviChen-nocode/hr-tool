@@ -19,13 +19,11 @@ const MAX_PANEL_WIDTH = 600
 
 export default function EditorView() {
   const { inputMode, setInputMode, setView } = useAppStore()
-  const getCurrentChart = useOrgStore((s) => s.getCurrentChart)
+  const chart = useOrgStore((s) => s.getCurrentChart())
   const preset = useStyleStore((s) => s.getPreset())
   const [panelWidth, setPanelWidth] = useState(320)
   const [panelCollapsed, setPanelCollapsed] = useState(false)
   const dragging = useRef(false)
-
-  const chart = getCurrentChart()
   const hasMembers = chart.members.some((m) => m.name.trim() !== '')
 
   const handleMouseDown = useCallback(() => {

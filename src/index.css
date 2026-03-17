@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+html, body, #root {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
 /* Smooth transitions for panel collapse */
 .panel-transition {
   transition: width 200ms ease-in-out, min-width 200ms ease-in-out, opacity 150ms ease-in-out;
