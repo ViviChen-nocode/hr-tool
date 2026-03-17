@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useOrgStore } from '../store/useOrgStore'
+import { useStyleStore } from '../store/useStyleStore'
 import type { OrgMember } from '../types'
 
 function createEmptyMember(parentId: string | null = null): OrgMember {
@@ -53,6 +54,7 @@ function TreeNode({
   onDragEnd,
 }: TreeNodeProps) {
   const { addMember, updateMember, removeMember } = useOrgStore()
+  const preset = useStyleStore((s) => s.getPreset())
   const children = members.filter((m) => m.parentId === member.id)
   const [collapsed, setCollapsed] = useState(false)
   const [editData, setEditData] = useState({
@@ -118,11 +120,12 @@ function TreeNode({
         onDrop={(e) => onDrop(e, member.id)}
         onDragEnd={onDragEnd}
         className={`group flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${
-          isDragOver
-            ? 'bg-blue-100 ring-2 ring-blue-400'
-            : 'hover:bg-gray-50'
+          !isDragOver ? 'hover:bg-gray-50' : ''
         }`}
-        style={{ paddingLeft: `${level * 24 + 8}px` }}
+        style={{
+          paddingLeft: `${level * 24 + 8}px`,
+          ...(isDragOver ? { backgroundColor: preset.accentLight, boxShadow: `0 0 0 2px ${preset.accent}` } : {}),
+        }}
       >
         {/* Expand/collapse toggle */}
         <button
@@ -160,7 +163,7 @@ function TreeNode({
               type="text"
               value={editData.name}
               placeholder="姓名"
-              className="w-28 rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-28 rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:ring-1 outline-none"
               onChange={(e) => setEditData((d) => ({ ...d, name: e.target.value }))}
               onKeyDown={handleEditKeyDown}
             />
@@ -168,7 +171,7 @@ function TreeNode({
               type="text"
               value={editData.title}
               placeholder="職稱"
-              className="w-28 rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-28 rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:ring-1 outline-none"
               onChange={(e) => setEditData((d) => ({ ...d, title: e.target.value }))}
               onKeyDown={handleEditKeyDown}
             />
@@ -176,7 +179,7 @@ function TreeNode({
               type="text"
               value={editData.department}
               placeholder="部門"
-              className="w-28 rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-28 rounded border border-gray-200 px-2 py-1 text-sm outline-none focus:ring-1 outline-none"
               onChange={(e) => setEditData((d) => ({ ...d, department: e.target.value }))}
               onKeyDown={handleEditKeyDown}
             />
@@ -199,7 +202,8 @@ function TreeNode({
           <div className="flex flex-shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
             <button
               type="button"
-              className="rounded px-1.5 py-0.5 text-xs text-blue-600 hover:bg-blue-50"
+              className="rounded px-1.5 py-0.5 text-xs hover:opacity-80"
+              style={{ color: preset.accent }}
               onClick={handleAddChild}
               title="新增子級"
             >
@@ -249,6 +253,7 @@ function TreeNode({
 
 export default function TreeInput() {
   const { getCurrentChart, addMember, moveMember } = useOrgStore()
+  const preset = useStyleStore((s) => s.getPreset())
   const chart = getCurrentChart()
   const members = chart.members
   const rootMembers = members.filter((m) => m.parentId === null)
@@ -309,7 +314,10 @@ export default function TreeInput() {
       {/* Add root button */}
       <button
         type="button"
-        className="mb-3 flex items-center gap-1 rounded px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50"
+        className="mb-3 flex items-center gap-1 rounded px-3 py-1.5 text-sm transition-colors"
+        style={{ color: preset.accent }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accentLight }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
         onClick={handleAddRoot}
       >
         <svg

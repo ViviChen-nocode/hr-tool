@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useOrgStore } from '../store/useOrgStore'
+import { useStyleStore } from '../store/useStyleStore'
 import type { FieldConfig } from '../types'
 
 const DEFAULT_KEYS = new Set(['name', 'title', 'department'])
@@ -9,13 +10,16 @@ interface FieldSettingsProps {
 }
 
 export default function FieldSettings({ onClose }: FieldSettingsProps) {
-  const { getCurrentChart, addField, removeField, updateFieldConfig } =
+  const { getCurrentChart, addField, removeField, updateFieldConfig, reorderFields } =
     useOrgStore()
+  const preset = useStyleStore((s) => s.getPreset())
   const chart = getCurrentChart()
   const fieldConfigs = chart.fieldConfigs
 
   const [newLabel, setNewLabel] = useState('')
   const [confirmDeleteKey, setConfirmDeleteKey] = useState<string | null>(null)
+  const dragIndexRef = useRef<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const handleAddField = () => {
     const label = newLabel.trim()
@@ -57,11 +61,16 @@ export default function FieldSettings({ onClose }: FieldSettingsProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-          <h2 className="text-base font-semibold text-gray-900">欄位設定</h2>
+        <div
+          className="flex items-center justify-between rounded-t-xl px-5 py-4"
+          style={{
+            background: `linear-gradient(135deg, ${preset.headerGradientFrom}, ${preset.headerGradientTo})`,
+          }}
+        >
+          <h2 className="text-base font-semibold text-white">欄位設定</h2>
           <button
             type="button"
-            className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-md p-1 text-white/70 hover:bg-white/20 hover:text-white transition-colors"
             onClick={onClose}
           >
             <svg
@@ -77,21 +86,45 @@ export default function FieldSettings({ onClose }: FieldSettingsProps) {
 
         {/* Field list */}
         <div className="max-h-[50vh] overflow-y-auto px-5 py-3">
-          {fieldConfigs.map((field) => (
+          {fieldConfigs.map((field, index) => (
             <div
               key={field.key}
-              className="flex items-center justify-between border-b border-gray-100 py-2.5 last:border-b-0"
+              draggable
+              onDragStart={() => { dragIndexRef.current = index }}
+              onDragOver={(e) => { e.preventDefault(); setDragOverIndex(index) }}
+              onDragLeave={() => { setDragOverIndex(null) }}
+              onDrop={() => {
+                if (dragIndexRef.current !== null && dragIndexRef.current !== index) {
+                  reorderFields(dragIndexRef.current, index)
+                }
+                dragIndexRef.current = null
+                setDragOverIndex(null)
+              }}
+              onDragEnd={() => { dragIndexRef.current = null; setDragOverIndex(null) }}
+              className={`flex items-center justify-between border-b border-gray-100 py-2.5 last:border-b-0 transition-colors ${
+                dragOverIndex === index ? 'bg-gray-50' : ''
+              }`}
+              style={dragOverIndex === index ? { borderTopColor: preset.accent, borderTopWidth: '2px' } : undefined}
             >
-              <span className="text-sm text-gray-700">
-                {field.label}
-                {DEFAULT_KEYS.has(field.key) && (
-                  <span className="ml-1.5 text-xs text-gray-400">
-                    (預設)
-                  </span>
-                )}
-              </span>
+              {/* Drag handle */}
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className="cursor-grab text-gray-300 hover:text-gray-500 select-none text-sm leading-none"
+                  title="拖曳排序"
+                >
+                  ⠿
+                </span>
+                <span className="text-sm text-gray-700 truncate">
+                  {field.label}
+                  {DEFAULT_KEYS.has(field.key) && (
+                    <span className="ml-1.5 text-xs text-gray-400">
+                      (預設)
+                    </span>
+                  )}
+                </span>
+              </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 {/* Visible toggle */}
                 <label className="flex items-center gap-1.5 text-xs text-gray-500">
                   <span>顯示</span>
@@ -102,7 +135,8 @@ export default function FieldSettings({ onClose }: FieldSettingsProps) {
                     onChange={() =>
                       handleToggleVisible(field.key, field.visible)
                     }
-                    className="h-4 w-4 rounded border-gray-300 text-blue-500 accent-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="h-4 w-4 rounded border-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{ accentColor: preset.accent }}
                   />
                 </label>
 
@@ -134,12 +168,16 @@ export default function FieldSettings({ onClose }: FieldSettingsProps) {
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="新增自訂欄位名稱"
-              className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm outline-none focus:ring-1"
+              style={{ '--tw-ring-color': preset.accent } as React.CSSProperties}
             />
             <button
               type="button"
               disabled={!newLabel.trim()}
-              className="rounded-md bg-blue-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+              style={{ backgroundColor: preset.accent }}
+              onMouseEnter={(e) => { if (newLabel.trim()) e.currentTarget.style.backgroundColor = preset.accentHover }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = preset.accent }}
               onClick={handleAddField}
             >
               新增

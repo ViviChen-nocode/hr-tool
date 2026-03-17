@@ -1,5 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react'
 import { useOrgStore } from '../store/useOrgStore'
+import { useStyleStore } from '../store/useStyleStore'
 import type { OrgMember, FieldConfig } from '../types'
 
 const DEFAULT_KEYS = new Set(['name', 'title', 'department'])
@@ -18,6 +19,7 @@ function createEmptyMember(): OrgMember {
 export default function TableInput() {
   const { getCurrentChart, addMember, updateMember, removeMember } =
     useOrgStore()
+  const preset = useStyleStore((s) => s.getPreset())
   const chart = getCurrentChart()
   const members = chart.members
   const fieldConfigs = chart.fieldConfigs
@@ -79,23 +81,27 @@ export default function TableInput() {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="px-3 py-2 text-left text-sm font-medium text-gray-500">
+            <tr
+              className="border-b"
+              style={{ backgroundColor: preset.accentLight, borderBottomColor: `${preset.accent}20` }}
+            >
+              <th className="px-3 py-2 text-left text-sm font-medium" style={{ color: preset.accent }}>
                 姓名
               </th>
-              <th className="px-3 py-2 text-left text-sm font-medium text-gray-500">
+              <th className="px-3 py-2 text-left text-sm font-medium" style={{ color: preset.accent }}>
                 職稱
               </th>
-              <th className="px-3 py-2 text-left text-sm font-medium text-gray-500">
+              <th className="px-3 py-2 text-left text-sm font-medium" style={{ color: preset.accent }}>
                 上級
               </th>
-              <th className="px-3 py-2 text-left text-sm font-medium text-gray-500">
+              <th className="px-3 py-2 text-left text-sm font-medium" style={{ color: preset.accent }}>
                 部門
               </th>
               {customFields.map((field) => (
                 <th
                   key={field.key}
-                  className="px-3 py-2 text-left text-sm font-medium text-gray-500"
+                  className="px-3 py-2 text-left text-sm font-medium"
+                  style={{ color: preset.accent }}
                 >
                   {field.label}
                 </th>
@@ -118,7 +124,7 @@ export default function TableInput() {
                     type="text"
                     value={member.name}
                     placeholder="輸入姓名"
-                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1 outline-none"
                     onChange={(e) =>
                       updateMember(member.id, { name: e.target.value })
                     }
@@ -130,7 +136,7 @@ export default function TableInput() {
                     type="text"
                     value={member.title}
                     placeholder="輸入職稱"
-                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1 outline-none"
                     onChange={(e) =>
                       updateMember(member.id, { title: e.target.value })
                     }
@@ -140,7 +146,7 @@ export default function TableInput() {
                 <td className="px-3 py-1.5">
                   <select
                     value={member.parentId ?? ''}
-                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1 outline-none"
                     onChange={(e) =>
                       updateMember(member.id, {
                         parentId: e.target.value || null,
@@ -162,7 +168,7 @@ export default function TableInput() {
                     type="text"
                     value={member.department}
                     placeholder="輸入部門"
-                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                    className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1 outline-none"
                     onChange={(e) =>
                       updateMember(member.id, { department: e.target.value })
                     }
@@ -175,7 +181,7 @@ export default function TableInput() {
                       type="text"
                       value={member.customFields?.[field.key] ?? ''}
                       placeholder={field.label}
-                      className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                      className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:ring-1 outline-none"
                       onChange={(e) =>
                         updateMember(member.id, {
                           customFields: {
@@ -217,7 +223,10 @@ export default function TableInput() {
 
       <button
         type="button"
-        className="mt-3 flex items-center gap-1 rounded px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50"
+        className="mt-3 flex items-center gap-1 rounded px-3 py-1.5 text-sm transition-colors"
+        style={{ color: preset.accent }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accentLight }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
         onClick={handleAddRow}
       >
         <svg

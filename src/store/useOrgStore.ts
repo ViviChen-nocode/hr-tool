@@ -40,6 +40,7 @@ interface OrgState {
   addField: (config: FieldConfig) => void
   removeField: (key: string) => void
   updateFieldConfig: (key: string, updates: Partial<Omit<FieldConfig, 'key'>>) => void
+  reorderFields: (fromIndex: number, toIndex: number) => void
 
   // Helpers
   getCurrentChart: () => OrgChart
@@ -162,6 +163,15 @@ export const useOrgStore = create<OrgState>()(
               f.key === key ? { ...f, ...updates } : f,
             ),
           }))
+        },
+
+        reorderFields: (fromIndex, toIndex) => {
+          updateCurrentChart((chart) => {
+            const configs = [...chart.fieldConfigs]
+            const [moved] = configs.splice(fromIndex, 1)
+            configs.splice(toIndex, 0, moved)
+            return { fieldConfigs: configs }
+          })
         },
 
         // Helpers

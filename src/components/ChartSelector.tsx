@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useOrgStore } from '../store/useOrgStore'
 import { useAppStore } from '../store/useAppStore'
+import { useStyleStore } from '../store/useStyleStore'
 
 export default function ChartSelector() {
   const { charts, currentChartId, addChart, switchChart, deleteChart, renameChart } =
     useOrgStore()
   const setView = useAppStore((s) => s.setView)
+  const preset = useStyleStore((s) => s.getPreset())
 
   const [isOpen, setIsOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -81,19 +83,25 @@ export default function ChartSelector() {
   }
 
   return (
-    <div className="flex items-center gap-2 border-b border-gray-200 bg-white px-4 py-1.5 text-sm">
-      <span className="text-gray-400 text-xs font-medium shrink-0">組織圖：</span>
+    <div
+      className="flex items-center gap-2 border-b px-4 py-1.5 text-sm"
+      style={{
+        background: `linear-gradient(to right, ${preset.headerGradientFrom}, ${preset.headerGradientTo})`,
+        borderBottomColor: `${preset.accent}40`,
+      }}
+    >
+      <span className="text-white/70 text-xs font-medium shrink-0">組織圖：</span>
 
       {/* Dropdown */}
       <div className="relative" ref={dropdownRef}>
         <button
           type="button"
-          className="flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+          className="flex items-center gap-1 rounded-md border border-white/20 bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25 transition-colors"
           onClick={() => setIsOpen((p) => !p)}
         >
           <span className="max-w-[200px] truncate">{currentChart?.name ?? '—'}</span>
           <svg
-            className={`h-3.5 w-3.5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`h-3.5 w-3.5 text-white/60 transition-transform ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -110,10 +118,11 @@ export default function ChartSelector() {
                 <div
                   key={chart.id}
                   className={`group flex items-center gap-1 px-3 py-1.5 ${
-                    chart.id === currentChartId
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                    chart.id !== currentChartId
+                      ? 'text-gray-700 hover:bg-gray-50'
+                      : ''
                   }`}
+                  style={chart.id === currentChartId ? { backgroundColor: preset.accentLight, color: preset.accent } : undefined}
                 >
                   {editingId === chart.id ? (
                     <input
@@ -175,7 +184,7 @@ export default function ChartSelector() {
       {/* Delete button */}
       <button
         type="button"
-        className="rounded p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        className="rounded p-1 text-white/50 hover:text-red-300 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         title="刪除目前組織圖"
         disabled={charts.length <= 1}
         onClick={handleDelete}

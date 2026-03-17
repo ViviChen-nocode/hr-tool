@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { useAppStore } from '../store/useAppStore'
 import { useOrgStore } from '../store/useOrgStore'
+import { useStyleStore } from '../store/useStyleStore'
 import TableInput from './TableInput'
 import TreeInput from './TreeInput'
 import OrgChartCanvas from './OrgChartCanvas'
@@ -19,6 +20,7 @@ const MAX_PANEL_WIDTH = 600
 export default function EditorView() {
   const { inputMode, setInputMode, setView } = useAppStore()
   const getCurrentChart = useOrgStore((s) => s.getCurrentChart)
+  const preset = useStyleStore((s) => s.getPreset())
   const [panelWidth, setPanelWidth] = useState(320)
   const [panelCollapsed, setPanelCollapsed] = useState(false)
   const dragging = useRef(false)
@@ -65,7 +67,13 @@ export default function EditorView() {
             <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3">
               <button
                 type="button"
-                className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                className="rounded-md border px-3 py-1 text-sm transition-colors"
+                style={{
+                  borderColor: `${preset.accent}30`,
+                  color: preset.accent,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accentLight }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
                 onClick={() => setView('input')}
               >
                 ← 返回
@@ -78,11 +86,12 @@ export default function EditorView() {
                 <button
                   key={tab.key}
                   type="button"
-                  className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150 ${
-                    inputMode === tab.key
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
+                  className="flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150"
+                  style={{
+                    backgroundColor: inputMode === tab.key ? 'white' : 'transparent',
+                    color: inputMode === tab.key ? preset.accent : '#6b7280',
+                    boxShadow: inputMode === tab.key ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+                  }}
                   onClick={() => setInputMode(tab.key)}
                 >
                   {tab.label}
@@ -119,7 +128,10 @@ export default function EditorView() {
             {/* Resize handle */}
             {!panelCollapsed && (
               <div
-                className="w-1 h-full cursor-col-resize bg-gray-200 hover:bg-blue-400 active:bg-blue-500 transition-colors"
+                className="w-1 h-full cursor-col-resize bg-gray-200 transition-colors"
+                style={{ '--hover-color': preset.accent } as React.CSSProperties}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accent }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#e5e7eb' }}
                 onMouseDown={handleMouseDown}
               />
             )}

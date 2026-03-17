@@ -3,6 +3,7 @@ import { Handle, Position, type NodeProps } from '@xyflow/react'
 import type { OrgMember, FieldConfig } from '../types'
 import { useAppStore } from '../store/useAppStore'
 import { useOrgStore } from '../store/useOrgStore'
+import { useStyleStore } from '../store/useStyleStore'
 
 type OrgNodeData = {
   member: OrgMember
@@ -12,6 +13,8 @@ type OrgNodeData = {
 export default function OrgNode({ data }: NodeProps) {
   const direction = useAppStore((s) => s.layoutDirection)
   const updateMember = useOrgStore((s) => s.updateMember)
+  const { textAlign, cardWidth } = useStyleStore()
+  const preset = useStyleStore((s) => s.getPreset())
   const { member, fieldConfigs } = data as unknown as OrgNodeData
 
   const [editing, setEditing] = useState(false)
@@ -103,34 +106,46 @@ export default function OrgNode({ data }: NodeProps) {
     return (
       <div
         ref={containerRef}
-        className="min-w-[200px] rounded-lg border-2 border-blue-400 bg-white shadow-lg"
+        className="rounded-lg border-2 bg-white shadow-lg overflow-hidden"
+        style={{ borderColor: preset.accent, width: `${cardWidth}px` }}
         onKeyDown={handleKeyDown}
       >
-        <div className="h-1 rounded-t-[6px] bg-gradient-to-r from-blue-500 to-blue-400" />
-        <div className="px-4 py-3">
+        <div
+          className="h-1.5"
+          style={{ background: `linear-gradient(to right, ${preset.gradientFrom}, ${preset.gradientTo})` }}
+        />
+        <div className="px-3 py-2">
         <Handle type="target" position={targetPosition} className="!bg-gray-400" />
 
         <input
           autoFocus
-          className="w-full rounded border border-gray-300 px-1.5 py-0.5 text-sm font-bold text-gray-900 outline-none focus:border-blue-500"
+          className="w-full rounded border border-gray-300 px-1.5 py-0.5 text-sm font-bold text-gray-900 outline-none focus:ring-1"
+          style={{ '--tw-ring-color': preset.accent, borderColor: undefined } as React.CSSProperties}
           value={draft.name}
           onChange={(e) => updateDraftField('name', e.target.value)}
           placeholder="姓名"
+          onFocus={(e) => { e.target.style.borderColor = preset.accent }}
+          onBlur={(e) => { e.target.style.borderColor = '#d1d5db' }}
         />
 
         {visibleFields.map((field) => (
           <input
             key={field.key}
-            className="mt-1 w-full rounded border border-gray-300 px-1.5 py-0.5 text-xs text-gray-600 outline-none focus:border-blue-500"
+            className="mt-1 w-full rounded border border-gray-300 px-1.5 py-0.5 text-xs text-gray-600 outline-none focus:ring-1"
             value={getDraftValue(field.key)}
             onChange={(e) => updateDraftField(field.key, e.target.value)}
             placeholder={field.label}
+            onFocus={(e) => { e.target.style.borderColor = preset.accent }}
+            onBlur={(e) => { e.target.style.borderColor = '#d1d5db' }}
           />
         ))}
 
         <div className="mt-1.5 flex gap-1 text-[10px]">
           <button
-            className="rounded bg-blue-500 px-2 py-0.5 text-white hover:bg-blue-600"
+            className="rounded px-2 py-0.5 text-white transition-colors"
+            style={{ backgroundColor: preset.accent }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accentHover }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = preset.accent }}
             onClick={save}
           >
             儲存
@@ -152,22 +167,56 @@ export default function OrgNode({ data }: NodeProps) {
   return (
     <div
       ref={containerRef}
-      className="min-w-[180px] rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg hover:border-blue-200 transition-all duration-150 cursor-pointer group"
+      className="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer group overflow-hidden"
+      style={{
+        width: `${cardWidth}px`,
+        borderColor: '#e5e7eb',
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = `${preset.accent}60` }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb' }}
       onDoubleClick={startEditing}
     >
       <Handle type="target" position={targetPosition} className="!bg-gray-400" />
 
       {/* Top accent bar */}
-      <div className="h-1 rounded-t-lg bg-gradient-to-r from-blue-500 to-blue-400" />
+      <div
+        className="h-1.5 rounded-t-lg"
+        style={{
+          background: `linear-gradient(to right, ${preset.gradientFrom}, ${preset.gradientTo})`,
+        }}
+      />
 
-      <div className="px-4 py-3">
-        <div className="text-sm font-bold text-gray-900">{member.name || '（未命名）'}</div>
+      <div className="px-4 py-3" style={{ textAlign }}>
+        <div className="text-sm font-bold text-gray-900 leading-snug">
+          {member.name || '（未命名）'}
+        </div>
+
+        {visibleFields.length > 0 && (
+          <div
+            className="my-1.5"
+            style={{
+              height: '1px',
+              background: `linear-gradient(to right, transparent, ${preset.accent}25, transparent)`,
+            }}
+          />
+        )}
 
         {visibleFields.map((field) => {
           const value = getFieldValue(field.key)
           if (!value) return null
+
+          // Title gets special styling
+          if (field.key === 'title') {
+            return (
+              <div key={field.key} className="text-xs font-medium text-gray-600">
+                {value}
+              </div>
+            )
+          }
+
+          // Department and other fields
           return (
-            <div key={field.key} className="mt-0.5 text-xs text-gray-500">
+            <div key={field.key} className="mt-0.5 text-xs text-gray-400">
               {value}
             </div>
           )

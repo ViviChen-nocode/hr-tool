@@ -1,6 +1,7 @@
 import dagre from 'dagre'
 import type { Node, Edge } from '@xyflow/react'
 import type { OrgMember, FieldConfig, LayoutDirection } from '../types'
+import { useStyleStore } from '../store/useStyleStore'
 
 interface LayoutOptions {
   members: OrgMember[]
@@ -15,11 +16,11 @@ interface LayoutResult {
   edges: Edge[]
 }
 
-const NODE_WIDTH = 200
 const NODE_HEIGHT = 80
 
 export function buildLayout(options: LayoutOptions): LayoutResult {
   const { members, fieldConfigs, direction, horizontalSpacing, verticalSpacing } = options
+  const NODE_WIDTH = useStyleStore.getState().cardWidth + 20 // add some padding for dagre
 
   if (members.length === 0) {
     return { nodes: [], edges: [] }
