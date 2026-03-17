@@ -41,7 +41,7 @@ export default function EditorView() {
 
   return (
     <ReactFlowProvider>
-      <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <div className="flex flex-col h-full w-full overflow-hidden">
         {/* Toolbar — full width */}
         <Toolbar />
 

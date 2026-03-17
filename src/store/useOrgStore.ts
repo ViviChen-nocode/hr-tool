@@ -28,6 +28,8 @@ interface OrgState {
   switchChart: (id: string) => void
   deleteChart: (id: string) => void
 
+  renameChart: (id: string, name: string) => void
+
   // Member actions
   addMember: (member: OrgMember) => void
   updateMember: (id: string, data: Partial<Omit<OrgMember, 'id'>>) => void
@@ -76,6 +78,14 @@ export const useOrgStore = create<OrgState>()(
         switchChart: (id) => {
           const exists = get().charts.some((c) => c.id === id)
           if (exists) set({ currentChartId: id })
+        },
+
+        renameChart: (id, name) => {
+          set((state) => ({
+            charts: state.charts.map((c) =>
+              c.id === id ? { ...c, name, updatedAt: Date.now() } : c,
+            ),
+          }))
         },
 
         deleteChart: (id) => {

@@ -24,7 +24,7 @@ export default function InputView() {
   const hasNamedMember = chart.members.some((m) => m.name.trim() !== '')
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <div className="flex h-full items-center justify-center bg-gray-50 p-4 overflow-auto">
       <div className="w-full max-w-3xl rounded-xl bg-white p-8 shadow-sm border border-gray-200">
         <h1 className="mb-6 text-2xl font-bold text-gray-800">建立組織圖</h1>
 
