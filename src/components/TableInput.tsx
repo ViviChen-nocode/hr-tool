@@ -1,6 +1,8 @@
 import { useRef, useCallback, useEffect } from 'react'
 import { useOrgStore } from '../store/useOrgStore'
-import type { OrgMember } from '../types'
+import type { OrgMember, FieldConfig } from '../types'
+
+const DEFAULT_KEYS = new Set(['name', 'title', 'department'])
 
 function createEmptyMember(): OrgMember {
   return {
@@ -18,6 +20,10 @@ export default function TableInput() {
     useOrgStore()
   const chart = getCurrentChart()
   const members = chart.members
+  const fieldConfigs = chart.fieldConfigs
+  const customFields: FieldConfig[] = fieldConfigs.filter(
+    (f) => !DEFAULT_KEYS.has(f.key),
+  )
   const nameInputRefs = useRef<Map<string, HTMLInputElement>>(new Map())
 
   // Ensure at least one row
@@ -86,6 +92,14 @@ export default function TableInput() {
               <th className="px-3 py-2 text-left text-sm font-medium text-gray-500">
                 部門
               </th>
+              {customFields.map((field) => (
+                <th
+                  key={field.key}
+                  className="px-3 py-2 text-left text-sm font-medium text-gray-500"
+                >
+                  {field.label}
+                </th>
+              ))}
               <th className="w-10"></th>
             </tr>
           </thead>
@@ -155,6 +169,24 @@ export default function TableInput() {
                     onKeyDown={(e) => handleKeyDown(e, member, 'department')}
                   />
                 </td>
+                {customFields.map((field) => (
+                  <td key={field.key} className="px-3 py-1.5">
+                    <input
+                      type="text"
+                      value={member.customFields?.[field.key] ?? ''}
+                      placeholder={field.label}
+                      className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                      onChange={(e) =>
+                        updateMember(member.id, {
+                          customFields: {
+                            ...member.customFields,
+                            [field.key]: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </td>
+                ))}
                 <td className="px-1 py-1.5 text-center">
                   <button
                     type="button"

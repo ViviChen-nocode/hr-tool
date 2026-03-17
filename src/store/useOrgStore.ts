@@ -37,6 +37,7 @@ interface OrgState {
   // Field config actions
   addField: (config: FieldConfig) => void
   removeField: (key: string) => void
+  updateFieldConfig: (key: string, updates: Partial<Omit<FieldConfig, 'key'>>) => void
 
   // Helpers
   getCurrentChart: () => OrgChart
@@ -140,6 +141,16 @@ export const useOrgStore = create<OrgState>()(
           if (key === 'name') return // name 欄位不可移除
           updateCurrentChart((chart) => ({
             fieldConfigs: chart.fieldConfigs.filter((f) => f.key !== key),
+          }))
+        },
+
+        updateFieldConfig: (key, updates) => {
+          // name 欄位不可隱藏
+          if (key === 'name' && updates.visible === false) return
+          updateCurrentChart((chart) => ({
+            fieldConfigs: chart.fieldConfigs.map((f) =>
+              f.key === key ? { ...f, ...updates } : f,
+            ),
           }))
         },
 
