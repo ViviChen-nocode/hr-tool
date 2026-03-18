@@ -177,7 +177,9 @@ export const useOrgStore = create<OrgState>()(
         // Helpers
         getCurrentChart: () => {
           const { charts, currentChartId } = get()
-          return charts.find((c) => c.id === currentChartId)!
+          return (
+            charts.find((c) => c.id === currentChartId) ?? charts[0] ?? createEmptyChart()
+          )
         },
       }
     },
