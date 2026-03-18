@@ -13,18 +13,15 @@ const tabs: { key: InputMode; label: string }[] = [
 
 export default function InputView() {
   const { inputMode, setInputMode, setView } = useAppStore()
-  const getCurrentChart = useOrgStore((s) => s.getCurrentChart)
+  const chart = useOrgStore((s) => s.getCurrentChart())
   const preset = useStyleStore((s) => s.getPreset())
 
+  const hasNamedMember = chart.members.some((m) => m.name.trim() !== '')
+
   const handleGenerate = () => {
-    const chart = getCurrentChart()
-    const hasNamedMember = chart.members.some((m) => m.name.trim() !== '')
     if (!hasNamedMember) return
     setView('editor')
   }
-
-  const chart = getCurrentChart()
-  const hasNamedMember = chart.members.some((m) => m.name.trim() !== '')
 
   return (
     <div className="flex h-full flex-col items-center justify-center bg-gray-50 p-4 overflow-auto">
