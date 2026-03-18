@@ -31,3 +31,13 @@ html, body, #root {
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* Floating mascot animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

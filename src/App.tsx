@@ -2,6 +2,8 @@ import { useAppStore } from './store/useAppStore'
 import InputView from './components/InputView'
 import EditorView from './components/EditorView'
 import ChartSelector from './components/ChartSelector'
+import FloatingMascot from './components/FloatingMascot'
+import Footer from './components/Footer'
 
 function App() {
   const view = useAppStore((s) => s.view)
@@ -9,9 +11,13 @@ function App() {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">
       <ChartSelector />
-      <div className="flex-1 overflow-hidden">
-        {view === 'input' ? <InputView /> : <EditorView />}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-hidden">
+          {view === 'input' ? <InputView /> : <EditorView />}
+        </div>
+        {view === 'input' && <Footer />}
       </div>
+      <FloatingMascot />
     </div>
   )
 }

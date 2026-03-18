@@ -3,6 +3,7 @@ import { useOrgStore } from '../store/useOrgStore'
 import { useStyleStore } from '../store/useStyleStore'
 import TableInput from './TableInput'
 import TreeInput from './TreeInput'
+import MobileHint from './MobileHint'
 import type { InputMode } from '../types'
 
 const tabs: { key: InputMode; label: string }[] = [
@@ -26,7 +27,8 @@ export default function InputView() {
   const hasNamedMember = chart.members.some((m) => m.name.trim() !== '')
 
   return (
-    <div className="flex h-full items-center justify-center bg-gray-50 p-4 overflow-auto">
+    <div className="flex h-full flex-col items-center justify-center bg-gray-50 p-4 overflow-auto">
+      <MobileHint />
       <div className="w-full max-w-3xl rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
         {/* Colored header area */}
         <div
