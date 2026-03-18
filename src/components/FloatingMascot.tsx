@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import mascotImage from '../assets/mascot-transparent.png'
+import mascotImage from '../assets/mascot.png'
 
 const LineIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
