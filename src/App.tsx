@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppStore } from './store/useAppStore'
 import { useOrgStore } from './store/useOrgStore'
 import { useStyleStore } from './store/useStyleStore'
@@ -8,23 +8,21 @@ import ChartSelector from './components/ChartSelector'
 import FloatingMascot from './components/FloatingMascot'
 import Footer from './components/Footer'
 
-function useHydrated() {
-  const orgHydrated = useSyncExternalStore(
-    useOrgStore.persist.onFinishHydration,
-    () => useOrgStore.persist.hasHydrated(),
-    () => false,
-  )
-  const styleHydrated = useSyncExternalStore(
-    useStyleStore.persist.onFinishHydration,
-    () => useStyleStore.persist.hasHydrated(),
-    () => false,
-  )
-  return orgHydrated && styleHydrated
-}
-
 function App() {
   const view = useAppStore((s) => s.view)
-  const hydrated = useHydrated()
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    const check = () => {
+      if (useOrgStore.persist.hasHydrated() && useStyleStore.persist.hasHydrated()) {
+        setHydrated(true)
+      }
+    }
+    check()
+    const unsub1 = useOrgStore.persist.onFinishHydration(check)
+    const unsub2 = useStyleStore.persist.onFinishHydration(check)
+    return () => { unsub1(); unsub2() }
+  }, [])
 
   if (!hydrated) return null
 
