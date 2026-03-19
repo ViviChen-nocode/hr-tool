@@ -1,9 +1,11 @@
+import { useRef, useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useOrgStore } from '../store/useOrgStore'
 import { useStyleStore } from '../store/useStyleStore'
 import TableInput from './TableInput'
 import TreeInput from './TreeInput'
 import MobileHint from './MobileHint'
+import { parseCsv, generateTemplateCsv, downloadCsv } from '../utils/csvImport'
 import type { InputMode } from '../types'
 
 const tabs: { key: InputMode; label: string }[] = [
@@ -14,13 +16,59 @@ const tabs: { key: InputMode; label: string }[] = [
 export default function InputView() {
   const { inputMode, setInputMode, setView } = useAppStore()
   const chart = useOrgStore((s) => s.getCurrentChart())
+  const importMembers = useOrgStore((s) => s.importMembers)
   const preset = useStyleStore((s) => s.getPreset())
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [importError, setImportError] = useState<string | null>(null)
 
   const hasNamedMember = chart.members.some((m) => m.name.trim() !== '')
 
   const handleGenerate = () => {
     if (!hasNamedMember) return
     setView('editor')
+  }
+
+  const handleImportClick = () => {
+    setImportError(null)
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const text = ev.target?.result as string
+        const result = parseCsv(text)
+        if (result.members.length === 0) {
+          setImportError('CSV 中沒有有效的資料列')
+          return
+        }
+
+        const hasExisting = chart.members.some((m) => m.name.trim() !== '')
+        if (hasExisting) {
+          const ok = window.confirm(
+            `將匯入 ${result.members.length} 筆資料，這會取代目前的成員資料。確定繼續？`,
+          )
+          if (!ok) return
+        }
+
+        importMembers(result.members, result.fieldConfigs)
+        setImportError(null)
+      } catch (err) {
+        setImportError(err instanceof Error ? err.message : '匯入失敗')
+      }
+    }
+    reader.readAsText(file, 'UTF-8')
+
+    // Reset input so same file can be re-imported
+    e.target.value = ''
+  }
+
+  const handleDownloadTemplate = () => {
+    downloadCsv(generateTemplateCsv(), '組織圖範本.csv')
   }
 
   return (
@@ -46,11 +94,49 @@ export default function InputView() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-800">建立組織圖</h1>
               <p className="text-sm text-gray-400">輸入成員資料後，點擊下方按鈕產生組織圖</p>
             </div>
+            {/* CSV import buttons */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                className="flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                onClick={handleDownloadTemplate}
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                CSV 範本
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors"
+                style={{ backgroundColor: preset.accent }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accentHover }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = preset.accent }}
+                onClick={handleImportClick}
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                匯入 CSV
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </div>
           </div>
+          {importError && (
+            <div className="mt-3 rounded-md bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-600">
+              {importError}
+            </div>
+          )}
         </div>
 
         <div className="px-8 py-6">

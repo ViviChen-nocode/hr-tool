@@ -42,6 +42,9 @@ interface OrgState {
   updateFieldConfig: (key: string, updates: Partial<Omit<FieldConfig, 'key'>>) => void
   reorderFields: (fromIndex: number, toIndex: number) => void
 
+  // Import
+  importMembers: (members: OrgMember[], fieldConfigs: FieldConfig[]) => void
+
   // Helpers
   getCurrentChart: () => OrgChart
 }
@@ -172,6 +175,14 @@ export const useOrgStore = create<OrgState>()(
             configs.splice(toIndex, 0, moved)
             return { fieldConfigs: configs }
           })
+        },
+
+        // Import
+        importMembers: (members, fieldConfigs) => {
+          updateCurrentChart(() => ({
+            members,
+            fieldConfigs,
+          }))
         },
 
         // Helpers
