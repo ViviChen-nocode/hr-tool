@@ -28,6 +28,16 @@ export default function TableInput() {
   )
   const nameInputRefs = useRef<Map<string, HTMLInputElement>>(new Map())
 
+  const handleAddRow = useCallback(() => {
+    const newMember = createEmptyMember()
+    addMember(newMember)
+    // Focus the name input of the new row after render
+    requestAnimationFrame(() => {
+      const input = nameInputRefs.current.get(newMember.id)
+      input?.focus()
+    })
+  }, [addMember])
+
   // Ensure at least one row
   useEffect(() => {
     if (members.length === 0) {
@@ -38,16 +48,6 @@ export default function TableInput() {
   const namedMembers = members.filter((m) => m.name.trim() !== '')
 
   if (members.length === 0) return null
-
-  const handleAddRow = useCallback(() => {
-    const newMember = createEmptyMember()
-    addMember(newMember)
-    // Focus the name input of the new row after render
-    requestAnimationFrame(() => {
-      const input = nameInputRefs.current.get(newMember.id)
-      input?.focus()
-    })
-  }, [addMember])
 
   const handleKeyDown = (
     e: React.KeyboardEvent,
