@@ -140,6 +140,13 @@ export default function InputView() {
         </div>
 
         <div className="px-8 py-6">
+          {/* Usage guide */}
+          <div className="mb-5 rounded-lg bg-gray-50 border border-gray-100 px-4 py-3 text-xs text-gray-500 leading-relaxed">
+            <p className="mb-1">手動輸入或匯入 CSV 快速建立成員資料，自動產生組織架構圖</p>
+            <p className="mb-1">資料自動儲存於瀏覽器，支援多張組織圖管理，完成後可匯出為 PNG</p>
+            <p className="text-amber-600">⚠ 清除瀏覽資料會導致資料遺失，重要資料請匯出保存</p>
+          </div>
+
           {/* Tabs */}
           <div className="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1">
             {tabs.map((tab) => (
