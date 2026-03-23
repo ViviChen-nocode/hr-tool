@@ -2,7 +2,6 @@ import { useMemo, useState, useCallback, useRef } from 'react'
 import {
   ReactFlow,
   Controls,
-  MiniMap,
   type NodeTypes,
   type Node,
   type OnNodeDrag,
@@ -139,7 +138,6 @@ export default function OrgChartCanvas() {
         onNodeDragStop={onNodeDragStop}
       >
         <Controls />
-        <MiniMap />
       </ReactFlow>
     </div>
   )

@@ -74,10 +74,10 @@ export default function InputView() {
   return (
     <div className="flex h-full flex-col items-center justify-center bg-gray-50 p-4 overflow-auto">
       <MobileHint />
-      <div className="w-full max-w-3xl rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
+      <div className="w-full max-w-3xl max-h-full flex flex-col rounded-xl bg-white shadow-sm border border-gray-200 overflow-hidden">
         {/* Colored header area */}
         <div
-          className="px-8 pt-8 pb-6"
+          className="shrink-0 px-8 pt-8 pb-6"
           style={{
             background: `linear-gradient(135deg, ${preset.headerGradientFrom}08, ${preset.headerGradientTo}12)`,
             borderBottom: `1px solid ${preset.accent}15`,
@@ -139,7 +139,7 @@ export default function InputView() {
           )}
         </div>
 
-        <div className="px-8 py-6">
+        <div className="px-8 py-6 overflow-auto flex-1 min-h-0">
           {/* Usage guide */}
           <div className="mb-5 rounded-lg bg-gray-50 border border-gray-100 px-4 py-3 text-xs text-gray-500 leading-relaxed">
             <p className="mb-1">手動輸入或匯入 CSV 快速建立成員資料，自動產生組織架構圖</p>
@@ -174,8 +174,10 @@ export default function InputView() {
               <TreeInput />
             )}
           </div>
+        </div>
 
-          {/* Generate button */}
+        {/* Generate button - sticky at bottom */}
+        <div className="shrink-0 border-t border-gray-100 bg-white px-8 py-4">
           <button
             type="button"
             disabled={!hasNamedMember}
@@ -191,7 +193,7 @@ export default function InputView() {
           </button>
 
           {/* Privacy notice */}
-          <p className="mt-4 text-center text-xs text-gray-400">
+          <p className="mt-3 text-center text-xs text-gray-400">
             <svg className="inline-block h-3 w-3 mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>

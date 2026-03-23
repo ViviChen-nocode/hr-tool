@@ -132,21 +132,6 @@ export default function Toolbar() {
       {/* 分隔線 */}
       <div className="h-6 w-px" style={{ backgroundColor: `${preset.accent}20` }} />
 
-      {/* 匯出 PNG */}
-      <button
-        type="button"
-        className="rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
-        style={{ borderColor: `${preset.accent}30`, color: '#374151', backgroundColor: 'white' }}
-        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${preset.accent}10` }}
-        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white' }}
-        onClick={() => exportToPng(getNodes)}
-      >
-        匯出 PNG
-      </button>
-
-      {/* 分隔線 */}
-      <div className="h-6 w-px" style={{ backgroundColor: `${preset.accent}20` }} />
-
       {/* 欄位設定 */}
       <button
         type="button"
@@ -193,6 +178,25 @@ export default function Toolbar() {
           />
         </svg>
         樣式設定
+      </button>
+
+      {/* 分隔線 */}
+      <div className="h-6 w-px" style={{ backgroundColor: `${preset.accent}20` }} />
+
+      {/* 下載圖片 */}
+      <button
+        type="button"
+        className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-white transition-colors"
+        style={{ backgroundColor: preset.accent }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = preset.accentHover }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = preset.accent }}
+        onClick={() => exportToPng(getNodes)}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+          <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+          <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+        </svg>
+        下載圖片（PNG）
       </button>
 
       {showFieldSettings && (
